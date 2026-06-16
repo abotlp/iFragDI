@@ -1,0 +1,302 @@
+{
+  "ambiguous_mapping_chainpair_count": 230,
+  "chainpair_length_ranges": {
+    "length_ratio": {
+      "count": 212,
+      "max": 14.688,
+      "min": 1.004
+    },
+    "query1_length_unbound": {
+      "count": 325,
+      "max": 825,
+      "min": 11
+    },
+    "query2_length_unbound": {
+      "count": 288,
+      "max": 578,
+      "min": 29
+    },
+    "total_chainpair_length": {
+      "count": 212,
+      "max": 1029,
+      "min": 68
+    }
+  },
+  "chainpair_nonrunnable_count": 230,
+  "chainpair_runnable_count": 212,
+  "counts_by_category_code": {
+    "AA": 55,
+    "AS": 12,
+    "EI": 45,
+    "ER": 26,
+    "ES": 17,
+    "OG": 23,
+    "OR": 24,
+    "OX": 55
+  },
+  "counts_by_difficulty": {
+    "difficult": 35,
+    "medium": 60,
+    "rigid": 162
+  },
+  "counts_by_length_balance_bin_chainpair": {
+    "balanced": 86,
+    "highly_imbalanced": 44,
+    "moderately_imbalanced": 82,
+    "unknown": 230
+  },
+  "counts_by_size_bin_chainpair": {
+    "large": 10,
+    "medium": 164,
+    "small": 38,
+    "unknown": 230
+  },
+  "counts_by_size_bin_entity": {
+    "large": 42,
+    "medium": 172,
+    "small": 43
+  },
+  "decomposed_multichain_chainpair_count": 290,
+  "direct_single_chain_chainpair_count": 152,
+  "entity_length_ranges": {
+    "ligand_total_length_unbound": {
+      "count": 257,
+      "max": 1491,
+      "min": 29
+    },
+    "receptor_total_length_unbound": {
+      "count": 257,
+      "max": 2128,
+      "min": 41
+    },
+    "total_entity_length": {
+      "count": 257,
+      "max": 2554,
+      "min": 111
+    }
+  },
+  "extra_local_ids_not_in_excel_table": [
+    "1BGX",
+    "1BJ1",
+    "1BVK",
+    "1FSK",
+    "1I9R",
+    "1IQD",
+    "1K4C",
+    "1KXQ",
+    "1NCA",
+    "1NSN",
+    "1QFW",
+    "2HMI",
+    "2JEL",
+    "9QFW"
+  ],
+  "heavy_atom_contact_count_ranges_5A": {
+    "chainpair_heavy_atom_contact_count_5A": {
+      "count": 442,
+      "max": 1764,
+      "min": 0
+    },
+    "entity_heavy_atom_contact_count_5A": {
+      "count": 257,
+      "max": 1962,
+      "min": 160
+    }
+  },
+  "interface_residue_count_ranges_5A": {
+    "chainpair_query1_interface_residue_count_5A": {
+      "count": 442,
+      "max": 79,
+      "min": 0
+    },
+    "chainpair_query2_interface_residue_count_5A": {
+      "count": 442,
+      "max": 70,
+      "min": 0
+    },
+    "chainpair_total_interface_residue_count_5A": {
+      "count": 442,
+      "max": 149,
+      "min": 0
+    },
+    "entity_total_interface_residue_count_5A": {
+      "count": 257,
+      "max": 168,
+      "min": 19
+    }
+  },
+  "missing_or_ambiguous_local_ids": [],
+  "multichain_entity_count": 105,
+  "multichain_pilot_runnable_count": 20,
+  "na_query_length_chainpair_count": 230,
+  "native_contacting_chainpair_counts_3p9A": {
+    "false": 75,
+    "true": 367
+  },
+  "native_contacting_chainpair_counts_5A": {
+    "false": 69,
+    "true": 373
+  },
+  "native_contacting_chainpair_counts_8A": {
+    "false": 63,
+    "true": 379
+  },
+  "noncontacting_chainpair_control_count_5A": 69,
+  "noncontacting_controls_missing_min_distance_count": 0,
+  "noncontacting_controls_with_min_distance_count": 69,
+  "nonrunnable_reasons": {
+    "query1_chain_empty": 117,
+    "query1_length_unbound_NA": 117,
+    "query1_mapping_ambiguous_or_low_confidence:best_hit_not_clearly_better_than_second": 91,
+    "query1_mapping_ambiguous_or_low_confidence:identity_below_threshold": 11,
+    "query1_mapping_ambiguous_or_low_confidence:identity_below_threshold,best_hit_not_clearly_better_than_second": 1,
+    "query1_mapping_ambiguous_or_low_confidence:identity_below_threshold,bound_coverage_below_threshold,unbound_coverage_below_threshold": 2,
+    "query1_mapping_ambiguous_or_low_confidence:identity_below_threshold,bound_coverage_below_threshold,unbound_coverage_below_threshold,best_hit_not_clearly_better_than_second": 1,
+    "query1_mapping_ambiguous_or_low_confidence:identity_below_threshold,unbound_coverage_below_threshold": 10,
+    "query1_mapping_ambiguous_or_low_confidence:identity_below_threshold,unbound_coverage_below_threshold,best_hit_not_clearly_better_than_second": 1,
+    "query2_chain_empty": 154,
+    "query2_length_unbound_NA": 154,
+    "query2_mapping_ambiguous_or_low_confidence:best_hit_not_clearly_better_than_second": 77,
+    "query2_mapping_ambiguous_or_low_confidence:identity_below_threshold": 31,
+    "query2_mapping_ambiguous_or_low_confidence:identity_below_threshold,best_hit_not_clearly_better_than_second": 22,
+    "query2_mapping_ambiguous_or_low_confidence:identity_below_threshold,bound_coverage_below_threshold": 7,
+    "query2_mapping_ambiguous_or_low_confidence:identity_below_threshold,bound_coverage_below_threshold,unbound_coverage_below_threshold": 3,
+    "query2_mapping_ambiguous_or_low_confidence:identity_below_threshold,unbound_coverage_below_threshold": 12,
+    "query2_mapping_ambiguous_or_low_confidence:identity_below_threshold,unbound_coverage_below_threshold,best_hit_not_clearly_better_than_second": 2
+  },
+  "pilot_multichain_summary": {
+    "chainpair_runnable_counts": {
+      "true": 20
+    },
+    "counts_by_category_code": {
+      "AA": 6,
+      "EI": 2,
+      "ER": 2,
+      "ES": 1,
+      "OG": 2,
+      "OR": 2,
+      "OX": 5
+    },
+    "counts_by_difficulty": {
+      "difficult": 4,
+      "medium": 7,
+      "rigid": 9
+    },
+    "counts_by_length_balance_bin": {
+      "balanced": 10,
+      "highly_imbalanced": 2,
+      "moderately_imbalanced": 8
+    },
+    "counts_by_size_bin": {
+      "medium": 14,
+      "small": 6
+    },
+    "mapping_status_counts_query1": {
+      "high_confidence": 20
+    },
+    "mapping_status_counts_query2": {
+      "high_confidence": 20
+    },
+    "native_contacting_chainpair_counts_5A": {
+      "false": 3,
+      "true": 17
+    },
+    "row_count": 20,
+    "total_interface_residue_count_range_5A": {
+      "count": 20,
+      "max": 93,
+      "min": 0
+    }
+  },
+  "pilot_singlechain_summary": {
+    "chainpair_runnable_counts": {
+      "true": 20
+    },
+    "counts_by_category_code": {
+      "AS": 3,
+      "EI": 3,
+      "ER": 2,
+      "ES": 2,
+      "OG": 3,
+      "OR": 1,
+      "OX": 6
+    },
+    "counts_by_difficulty": {
+      "difficult": 6,
+      "medium": 7,
+      "rigid": 7
+    },
+    "counts_by_length_balance_bin": {
+      "balanced": 4,
+      "highly_imbalanced": 5,
+      "moderately_imbalanced": 11
+    },
+    "counts_by_size_bin": {
+      "large": 1,
+      "medium": 14,
+      "small": 5
+    },
+    "mapping_status_counts_query1": {
+      "high_confidence": 20
+    },
+    "mapping_status_counts_query2": {
+      "high_confidence": 20
+    },
+    "native_contacting_chainpair_counts_5A": {
+      "true": 20
+    },
+    "row_count": 20,
+    "total_interface_residue_count_range_5A": {
+      "count": 20,
+      "max": 72,
+      "min": 37
+    }
+  },
+  "sequence_mapping_status_counts": {
+    "query1:ambiguous_or_low_confidence": 117,
+    "query1:high_confidence": 325,
+    "query2:ambiguous_or_low_confidence": 154,
+    "query2:high_confidence": 288
+  },
+  "single_chain_entity_count": 152,
+  "singlechain_pilot_runnable_count": 20,
+  "synthetic_id_mapping_used": [
+    {
+      "benchmark_row_index": 74,
+      "local_file_id": "BOYV",
+      "reason": "README synthetic/local ID mapped by bound-chain content",
+      "source_base_id": "1OYV",
+      "table_complex_id": "1OYV_B:I"
+    },
+    {
+      "benchmark_row_index": 164,
+      "local_file_id": "BP57",
+      "reason": "README synthetic/local ID mapped by bound-chain content",
+      "source_base_id": "3P57",
+      "table_complex_id": "3P57_CD:P"
+    },
+    {
+      "benchmark_row_index": 165,
+      "local_file_id": "CP57",
+      "reason": "README synthetic/local ID mapped by bound-chain content",
+      "source_base_id": "3P57",
+      "table_complex_id": "3P57_IJ:P"
+    },
+    {
+      "benchmark_row_index": 220,
+      "local_file_id": "BAAD",
+      "reason": "README synthetic/local ID mapped by bound-chain content",
+      "source_base_id": "3AAD",
+      "table_complex_id": "3AAD_A:D"
+    }
+  ],
+  "total_chainpair_tasks": 442,
+  "total_entities_mapped_to_local_files": 257,
+  "total_entities_missing_files": 0,
+  "total_rows_in_excel_table": 257,
+  "warnings": [
+    "Ignored 864 macOS sidecar PDB files matching ._*.pdb",
+    "Multi-chain pilot strict negative criteria yielded 2 rows; filling only from safe runnable rows",
+    "22 official rows have local bound chain IDs that differ from the Excel table annotation; see entity notes"
+  ]
+}

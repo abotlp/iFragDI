@@ -1,0 +1,89 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Environments and local config
+.env
+.env.*
+*.env
+.codex
+.venv/
+venv/
+env/
+conda-meta/
+
+# OS/editor
+.DS_Store
+._*
+*~
+.vscode/
+.idea/
+
+# Benchmark raw data and generated outputs
+benchmark/raw/
+benchmark/bm5_ifragdi_runs/
+benchmark/logs/
+benchmark/logs/slurm/
+benchmark/logs/ifragdi_smoke/
+benchmark/logs/*.log
+benchmark/logs/*commands.tsv
+
+# Large/generated scientific outputs
+*.npy
+*.npz
+*.png
+*.jpg
+*.jpeg
+*.pdb
+*.cif
+*.mmcif
+*.rsa
+*.pssm
+*.blast.tsv
+
+# MMseqs / BLAST / downloaded databases
+data/raw/
+data/cache/
+data/datasets/
+data/interaction_templates/
+data/db/
+databases/
+db/
+tmp/
+temp/
+*.db
+*.dmnd
+*.pin
+*.phr
+*.psq
+*.pal
+*.nin
+*.nhr
+*.nsq
+
+# raDI generated files
+*_DI.out
+*_DI_top.dat
+*_MI_top.dat
+*_cmap.dat
+*_cmapOff.dat
+*_gnu.dat
+
+# Vendored/external tool payloads and local reference PDFs
+tools/RADI/
+tools/RADI/.git/
+tools/RADI/publication_data/
+papers/
+
+# LightDock generated outputs
+lightdock_*/
+swarm_*/
+gso_*.out
+rank_by_scoring.list
+rank_by_scoring.list.*
