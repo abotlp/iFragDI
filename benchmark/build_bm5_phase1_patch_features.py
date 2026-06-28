@@ -28,11 +28,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+from typing import Dict, List, Sequence
 
 import numpy as np
 import pandas as pd
@@ -194,18 +193,6 @@ def to_numeric(df: pd.DataFrame, columns: Sequence[str], fill_missing: bool = Fa
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
 
-def safe_nanmean(series: pd.Series) -> float:
-    s = pd.to_numeric(series, errors="coerce")
-    s = s[np.isfinite(s)]
-    return float(s.mean()) if len(s) else float("nan")
-
-
-def safe_nanmax(series: pd.Series) -> float:
-    s = pd.to_numeric(series, errors="coerce")
-    s = s[np.isfinite(s)]
-    return float(s.max()) if len(s) else float("nan")
-
-
 def sorted_group(df: pd.DataFrame) -> pd.DataFrame:
     """Return a deterministic order within each chainpair/query_side group."""
     out = df.copy()
@@ -310,61 +297,80 @@ def add_window_features_for_group(
     top_quantile: float,
     target_columns: Sequence[str],
 ) -> pd.DataFrame:
+    """Add local sequence-window features for one chainpair/query_side group.
+
+    New columns are accumulated in a dictionary and concatenated once. This keeps
+    pandas from fragmenting the DataFrame and avoids PerformanceWarning spam.
+    """
     g = group.copy()
+    new_cols: Dict[str, pd.Series] = {}
+    topq_label = int(top_quantile * 100)
 
     # Main score columns: leakage-safe prediction-side features.
     for col in score_columns:
         if col not in g.columns:
             g[col] = 0.0
         g[col] = pd.to_numeric(g[col], errors="coerce").fillna(0.0)
-        g[f"{col}_rank_pct_in_chain"] = group_rank_percentile(g[col])
+        new_cols[f"{col}_rank_pct_in_chain"] = group_rank_percentile(g[col])
 
         threshold = positive_quantile_threshold(g[col], top_quantile)
         high = g[col].gt(0) & g[col].ge(threshold)
-        g[f"{col}_topq{int(top_quantile * 100):02d}_flag"] = high.astype(int)
-        g[f"{col}_topq{int(top_quantile * 100):02d}_segment_len"] = segment_lengths(high).astype(int)
-        g[f"{col}_dist_to_topq{int(top_quantile * 100):02d}"] = distance_to_nearest_true(high)
+        new_cols[f"{col}_topq{topq_label:02d}_flag"] = high.astype(int)
+        new_cols[f"{col}_topq{topq_label:02d}_segment_len"] = segment_lengths(high).astype(int)
+        new_cols[f"{col}_dist_to_topq{topq_label:02d}"] = distance_to_nearest_true(high)
 
         for w in windows:
             prefix = f"{col}_win{w}"
-            g[f"{prefix}_mean"] = rolling_center(g[col], w, "mean")
-            g[f"{prefix}_max"] = rolling_center(g[col], w, "max")
-            g[f"{prefix}_sum"] = rolling_center(g[col], w, "sum")
+            new_cols[f"{prefix}_mean"] = rolling_center(g[col], w, "mean")
+            new_cols[f"{prefix}_max"] = rolling_center(g[col], w, "max")
+            new_cols[f"{prefix}_sum"] = rolling_center(g[col], w, "sum")
 
     # Diagnostic baseline/local summaries, marked separately in the manifest.
     for col in diagnostic_score_columns:
         if col not in g.columns:
             continue
         g[col] = pd.to_numeric(g[col], errors="coerce").fillna(0.0)
-        g[f"diagnostic_{col}_rank_pct_in_chain"] = group_rank_percentile(g[col])
+        new_cols[f"diagnostic_{col}_rank_pct_in_chain"] = group_rank_percentile(g[col])
         for w in windows:
             prefix = f"diagnostic_{col}_win{w}"
-            g[f"{prefix}_mean"] = rolling_center(g[col], w, "mean")
-            g[f"{prefix}_max"] = rolling_center(g[col], w, "max")
+            new_cols[f"{prefix}_mean"] = rolling_center(g[col], w, "mean")
+            new_cols[f"{prefix}_max"] = rolling_center(g[col], w, "max")
+
+    # Combine once so cross-features can refer to the newly created window columns.
+    if new_cols:
+        g = pd.concat([g, pd.DataFrame(new_cols, index=g.index)], axis=1)
+
+    radi_new: Dict[str, pd.Series] = {}
 
     # raDI-neighborhood features. These are derived only from prediction-side raDI
     # features and local sequence position.
     radi_anchor_positive = pd.to_numeric(g.get("radi_anchor", 0.0), errors="coerce").fillna(0.0).gt(0)
-    g["radi_anchor_dist_nearest"] = distance_to_nearest_true(radi_anchor_positive)
-    g["radi_anchor_dist_nearest_filled"] = g["radi_anchor_dist_nearest"].fillna(g["chain_length_in_table"] + 1)
+    radi_dist = distance_to_nearest_true(radi_anchor_positive)
+    radi_new["radi_anchor_dist_nearest"] = radi_dist
+    radi_new["radi_anchor_dist_nearest_filled"] = radi_dist.fillna(g["chain_length_in_table"] + 1)
 
     radi_anchor_numeric = radi_anchor_positive.astype(int)
     radi_component_numeric = pd.to_numeric(g.get("radi_component", 0.0), errors="coerce").fillna(0.0)
     for w in windows:
         count_col = f"radi_anchor_win{w}_count"
-        max_col = f"radi_component_win{w}_max"
-        g[count_col] = rolling_center(radi_anchor_numeric, w, "sum")
-        g[f"radi_anchor_win{w}_has_anchor"] = g[count_col].gt(0).astype(int)
-        g[max_col] = rolling_center(radi_component_numeric, w, "max")
+        anchor_count = rolling_center(radi_anchor_numeric, w, "sum")
+        radi_new[count_col] = anchor_count
+        radi_new[f"radi_anchor_win{w}_has_anchor"] = anchor_count.gt(0).astype(int)
+        radi_new[f"radi_component_win{w}_max"] = rolling_center(radi_component_numeric, w, "max")
 
         # Contextualized raDI support: raDI anchors are only expected to help when
         # they fall inside a broader iFrag/conservation/patch-supported region.
         if f"patch_score_win{w}_max" in g.columns:
-            g[f"radi_anchor_win{w}_x_patch_max"] = g[count_col] * g[f"patch_score_win{w}_max"].fillna(0.0)
+            radi_new[f"radi_anchor_win{w}_x_patch_max"] = anchor_count * g[f"patch_score_win{w}_max"].fillna(0.0)
         if f"conservation_component_win{w}_max" in g.columns:
-            g[f"radi_anchor_win{w}_x_conservation_max"] = g[count_col] * g[f"conservation_component_win{w}_max"].fillna(0.0)
+            radi_new[f"radi_anchor_win{w}_x_conservation_max"] = anchor_count * g[f"conservation_component_win{w}_max"].fillna(0.0)
         if f"ifrag_strength_win{w}_max" in g.columns:
-            g[f"radi_anchor_win{w}_x_ifrag_strength_max"] = g[count_col] * g[f"ifrag_strength_win{w}_max"].fillna(0.0)
+            radi_new[f"radi_anchor_win{w}_x_ifrag_strength_max"] = anchor_count * g[f"ifrag_strength_win{w}_max"].fillna(0.0)
+
+    if radi_new:
+        g = pd.concat([g, pd.DataFrame(radi_new, index=g.index)], axis=1)
+
+    label_new: Dict[str, pd.Series] = {}
 
     # Soft/diagnostic labels derived from native interface labels. These should
     # be treated as labels/diagnostics, not input features.
@@ -374,10 +380,13 @@ def add_window_features_for_group(
         target_numeric = pd.to_numeric(g[target_col], errors="coerce").fillna(0).clip(lower=0, upper=1)
         for w in windows:
             label_prefix = f"{target_col}_win{w}"
-            g[f"near_{target_col}_window_{w}"] = rolling_center(target_numeric, w, "max").fillna(0).astype(int)
-            g[f"{label_prefix}_positive_count"] = rolling_center(target_numeric, w, "sum").fillna(0).astype(int)
+            label_new[f"near_{target_col}_window_{w}"] = rolling_center(target_numeric, w, "max").fillna(0).astype(int)
+            label_new[f"{label_prefix}_positive_count"] = rolling_center(target_numeric, w, "sum").fillna(0).astype(int)
 
-    return g
+    if label_new:
+        g = pd.concat([g, pd.DataFrame(label_new, index=g.index)], axis=1)
+
+    return g.copy()
 
 
 def build_feature_manifest(
@@ -617,6 +626,7 @@ def main() -> None:
 
     out_df = pd.concat(parts, axis=0, ignore_index=False).sort_values("_original_row_order", kind="mergesort")
     out_df = out_df.drop(columns=[c for c in ["_score_residue_index_numeric", "_original_row_order"] if c in out_df.columns])
+    out_df = out_df.copy()
 
     manifest = build_feature_manifest(original_columns, list(out_df.columns), args)
     summary = summarize_feature_table(out_df, original_columns, manifest, args, warnings_list)
